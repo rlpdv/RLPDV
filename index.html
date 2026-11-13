@@ -64,14 +64,19 @@
     html, body {
       height: 100%;
       margin: 0;
-      background: var(--white);
       color: var(--navy);
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       text-rendering: optimizeLegibility;
     }
 
+    /* Background image: fills the viewport on any screen, white shows until it loads */
+    html {
+      background: var(--white) url("./BGTAB768.jpg") center center / cover no-repeat;
+    }
+
     body {
+      background: transparent;
       display: grid;
       place-items: center;
       overflow: hidden;
