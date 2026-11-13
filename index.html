@@ -23,7 +23,7 @@
   <link rel="preconnect" href="https://www.ralphlauren.global">
   <link rel="dns-prefetch" href="https://www.ralphlauren.global">
   <script type="speculationrules">
-    { "prerender": [{ "source": "list", "urls": ["https://www.ralphlauren.global/en"] }] }
+    { "prerender": [{ "source": "list", "urls": ["https://www.ralphlauren.global/in/en"] }] }
   </script>
 
   <style>
@@ -256,17 +256,40 @@
     .cta:focus-visible { outline: 1px solid var(--navy); outline-offset: 6px; }
 
     .is-fail .status__rule::after { background: var(--grey-text); }
-    .is-fail .dots { visibility: hidden; }
-    .is-fail .stage { transform: translateY(calc(var(--shift, 0px) * -1)); transition: transform .9s var(--ease-in-out); }
-    .is-fail-msg .status { opacity: 0; transition-delay: 0s; }
-    .is-fail-msg .notice { opacity: 1; visibility: visible; transform: translate(-50%, 0); transition-delay: .25s, .25s, 0s; }
-    .is-fail-msg { overflow: auto; }
+    .is-result .dots { visibility: hidden; }
+    .is-result .stage { transform: translateY(calc(var(--shift, 0px) * -1)); transition: transform .9s var(--ease-in-out), opacity .8s var(--ease-in-out), filter .8s var(--ease-in-out); }
+    .is-result.is-leave .stage { transform: translateY(calc(var(--shift, 0px) * -1 - 12px)); }
+    .is-msg .status { opacity: 0; transition-delay: 0s; }
+    .is-msg .notice:not([hidden]) { opacity: 1; visibility: visible; transform: translate(-50%, 0); transition-delay: .25s, .25s, 0s; }
+    .is-msg { overflow: auto; }
+
+    /* Verified: "Redirecting" label + hairline that fills over the hold time */
+    .notice__redirect { margin-top: 36px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
+    .notice__redirect-label {
+      margin: 0;
+      font-family: var(--font-mono);
+      font-size: 11px;
+      letter-spacing: 0.9px;
+      margin-right: -0.9px;
+      line-height: 1;
+      text-transform: uppercase;
+      color: var(--grey-text);
+    }
+    .notice__bar { width: 120px; height: 1px; background: var(--grey-rule); overflow: hidden; }
+    .notice__bar::after {
+      content: ""; display: block; height: 100%;
+      background: var(--navy);
+      transform: scaleX(0); transform-origin: left center;
+      transition: transform var(--hold, 4000ms) linear;
+    }
+    .is-redirecting .notice__bar::after { transform: scaleX(1); }
+    .notice--ok .notice__actions { margin-top: 28px; }
 
     /* Respect reduced-motion: no movement, just a calm cross-fade */
     @media (prefers-reduced-motion: reduce) {
       .logo, .status, .status__rule::after { transition-duration: .01ms !important; }
       .is-leave .stage { transform: none; filter: none; }
-      .notice, .is-fail .stage { transition-duration: .01ms !important; }
+      .notice, .is-result .stage { transition-duration: .01ms !important; }
       .is-lift .logo { transform: none; }
       .is-lift .status { transform: translate(-50%, 0); }
       .dots span { animation: none; opacity: 1; }
@@ -287,23 +310,35 @@
       <div class="status__rule" aria-hidden="true"></div>
     </div>
 
-    <section class="notice" aria-labelledby="notice-title" hidden>
+    <section class="notice notice--fail" aria-labelledby="notice-title" hidden>
       <h2 class="notice__title" id="notice-title" tabindex="-1">Authentication Not Found</h2>
       <p class="notice__body">Thank you for contacting Ralph Lauren. Unfortunately, we are unable to verify the authenticity of products not purchased directly through our Ralph Lauren websites or an authorized Ralph Lauren retailer.</p>
-      <p class="notice__body">We appreciate your support, and encourage you to shop through our authorized channels in the future for a guaranteed authentic experience. To find your nearest Ralph Lauren store, please visit our <a href="https://www.ralphlauren.global/en/stores">store locator</a>.</p>
+      <p class="notice__body">We appreciate your support, and encourage you to shop through our authorized channels in the future for a guaranteed authentic experience. To find your nearest Ralph Lauren store, please visit our <a href="https://www.ralphlauren.global/in/en/stores">store locator</a>.</p>
       <div class="notice__actions">
-        <a class="cta" href="https://www.ralphlauren.global/en/stores">Find a Store</a>
-        <a class="cta" href="https://www.ralphlauren.global/en">Shop Ralph Lauren</a>
+        <a class="cta" href="https://www.ralphlauren.global/in/en/stores">Find a Store</a>
+        <a class="cta" href="https://www.ralphlauren.global/in/en">Shop Ralph Lauren</a>
       </div>
     </section>
 
-    <noscript><p><a href="https://www.ralphlauren.global/en">Continue to Ralph Lauren</a></p></noscript>
+    <section class="notice notice--ok" aria-labelledby="ok-title" hidden>
+      <h2 class="notice__title" id="ok-title" tabindex="-1">Authenticated</h2>
+      <p class="notice__body">Thank you for contacting Ralph Lauren. This product has been verified as an authentic Ralph Lauren product.</p>
+      <div class="notice__redirect" aria-hidden="true">
+        <p class="notice__redirect-label">Redirecting to Ralph Lauren</p>
+        <div class="notice__bar"></div>
+      </div>
+      <div class="notice__actions">
+        <a class="cta js-continue" href="https://www.ralphlauren.global/in/en">Continue Now</a>
+      </div>
+    </section>
+
+    <noscript><p><a href="https://www.ralphlauren.global/in/en">Continue to Ralph Lauren</a></p></noscript>
   </main>
 
   <script>
     (() => {
       // Where to land when authentication succeeds. Point this at your own home page if you have one (e.g. "./home.html").
-      const HOME_URL = "https://www.ralphlauren.global/en";
+      const HOME_URL = "https://www.ralphlauren.global/in/en";
 
       // ---- QR code lists --------------------------------------------------------
       // Each QR opens this page as  ...index.html?code=RL-0001
@@ -361,7 +396,8 @@
         lift:     1200,  // logo rises, status appears
         auth:     1700,  // hairline starts drawing
         authMs:   2200,  // how long the hairline takes
-        settle:   6500,   // pause on "Authenticated" before leaving
+        settle:   800,   // pause on "AUTHENTICATED" / "NOT FOUND" label before the big message appears
+        hold:     4000,  // how long the big "Authenticated" message stays before redirecting
         leave:    800    // matches .stage transition: lift + fade + soft blur out to white
       };
 
@@ -369,6 +405,7 @@
       const label = document.querySelector(".status__text");
       const stage = document.querySelector(".stage");
       body.style.setProperty("--auth-duration", T.authMs + "ms");
+      body.style.setProperty("--hold", T.hold + "ms");
 
       const wait = (ms) => new Promise((r) => setTimeout(r, ms));
 
@@ -394,23 +431,33 @@
         // If the check is still running, the hairline is full and the dots keep pulsing until it answers.
         const authentic = await verification;
 
-        if (!authentic) return showNotFound();
+        if (!authentic) return showResult(false);
 
-        label.textContent = "Authenticated"; body.classList.add("is-done");
-        await wait(T.settle);                 body.classList.add("is-leave");
-        stage.setAttribute("aria-busy", "false");
+        await showResult(true);
+        body.classList.add("is-redirecting");  // hairline fills over T.hold
+        await wait(T.hold);
+        leave();
+      });
+
+      let leaving = false;
+      async function leave() {
+        if (leaving) return;
+        leaving = true;
+        body.classList.add("is-leave");
         // Navigate only once the screen is fully white, so the hand-off to the
         // (prerendered) home page is a clean white-to-page reveal, never a flash.
         await wait(T.leave);
         requestAnimationFrame(() => window.location.replace(HOME_URL)); // replace(): Back won't return to the loader
-      });
+      }
+      // "Continue Now" skips the wait but keeps the same smooth fade.
+      document.querySelector(".js-continue").addEventListener("click", (e) => { e.preventDefault(); leave(); });
 
-      async function showNotFound() {
-        label.textContent = "Not Found";
-        body.classList.add("is-fail");
+      async function showResult(ok) {
+        label.textContent = ok ? "Authenticated" : "Not Found";
+        body.classList.add("is-result", ok ? "is-ok" : "is-fail");
         stage.setAttribute("aria-busy", "false");
 
-        const notice = document.querySelector(".notice");
+        const notice = document.querySelector(ok ? ".notice--ok" : ".notice--fail");
         notice.hidden = false;
         // Re-centre logo + message as one block; never push the logo above a 40px top margin.
         const logo = document.querySelector(".logo");
@@ -421,10 +468,10 @@
         const shift = Math.max(0, Math.min(ideal, logoTop - 40));
         body.style.setProperty("--shift", shift + "px");
 
-        await wait(T.settle + 300);           // let "NOT FOUND" register before the message replaces it
-        body.classList.add("is-fail-msg");
+        await wait(T.settle);                  // let the small label register before the big message replaces it
+        body.classList.add("is-msg");
         await wait(400);
-        document.getElementById("notice-title").focus({ preventScroll: true }); // screen readers land on the message
+        notice.querySelector(".notice__title").focus({ preventScroll: true }); // screen readers land on the message
       }
     })();
   </script>
