@@ -79,6 +79,14 @@
         linear-gradient(rgba(255,255,255,var(--bg-veil)), rgba(255,255,255,var(--bg-veil))),
         var(--white) url("./BGTAB768.jpg") center top / 100% auto no-repeat;
     }
+    /* Tablets and phones: fill the screen, centred */
+    @media (max-width: 1023px) {
+      html {
+        background-position: center center;
+        background-size: cover;
+      }
+    }
+    /* Phones: clouds at full strength */
     @media (max-width: 767px) {
       html {
         --bg-veil: 0;
