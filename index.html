@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en-IN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Ralph Lauren® India</title>
+  <meta name="theme-color" content="#FFFFFF">
+
+  <!--
+    Fonts (first one found wins):
+      Wordmark: 1) ./fonts/RalphLauren.ttf — the dafontfree.co "Ralph Lauren" font
+                   (actually Abhaya Libre Medium, SIL Open Font License), pixel-fitted
+                2) fallback: Bodoni Moda 500, pixel-fitted to the live site's
+                   header logo (264px wide, 19px cap height, 0.281em tracking)
+      Label:    Space Mono 11px / 0.9px tracking. Closest free match to the site's
+                Founders Grotesk Mono nav (within ~2% of the real word widths).
+  -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bodoni+Moda:opsz,wght@6..96,400;6..96,500&family=Space+Mono&family=Hanken+Grotesk:wght@400;500&display=swap" rel="stylesheet">
+
+  <!-- Smooth redirect: warm up the destination while the loader plays -->
+  <link rel="preconnect" href="https://www.ralphlauren.global">
+  <link rel="dns-prefetch" href="https://www.ralphlauren.global">
+  <script type="speculationrules">
+    { "prerender": [{ "source": "list", "urls": ["https://www.ralphlauren.global/in/en"] }] }
+  </script>
+
+  <style>
+    @font-face { font-family: "Ralph Lauren"; src: local("Ralph Lauren"), url("./fonts/RalphLauren.ttf") format("truetype"); font-display: block; }
+
+    /* Same-origin cross-document fade if HOME_URL is your own page */
+    @view-transition { navigation: auto; }
+    ::view-transition-old(root), ::view-transition-new(root) { animation-duration: .6s; animation-timing-function: cubic-bezier(.65,0,.35,1); }
+
+    /* Tokens lifted from ralphlauren.global's own CSS custom properties */
+    :root {
+      --navy: #041E3A;          /* --colorPoloPrimary: primary text, buttons, promo bar */
+      --navy-dark: #131528;     /* --navydark */
+      --grey-rule: #E4DDDD;     /* hairline borders */
+      --grey-text: #707070;     /* secondary copy */
+      --white: #FFFFFF;
+
+      --font-display: "Ralph Lauren", "Bodoni Moda", "Didot", "Bodoni 72", "Times New Roman", serif;
+      --font-mono: "Space Mono", "Lucida Console", monospace;
+      /* Body/CTA face on the site is Founders Grotesk Text; Hanken Grotesk is the closest free grotesque */
+      --font-text: "Hanken Grotesk", "Helvetica Neue", Arial, sans-serif;
+      /* Headline/description serif on the site is LeJeune Deck */
+      --font-serif: "Bodoni Moda", "Didot", "Times New Roman", serif;
+
+      /* The site's motion vocabulary: unhurried, ease-out, ~0.35-0.5s */
+      --ease-out: cubic-bezier(.22, .61, .36, 1);
+      --ease-in-out: cubic-bezier(.65, 0, .35, 1);
+
+      /* Site's hero logo is 504px wide = 1.91x the 264px header logo (24px fitted) -> ~46px */
+      --logo-size: clamp(24px, 3.2vw, 46px);
+      --logo-track: 0.2813em;   /* pixel-fitted against the live header logo */
+      --logo-gap: 0.739em;      /* RALPH ‹gap› LAUREN, also fitted (1.02em ink gap) */
+      --lift: clamp(18px, 2.6vh, 30px);
+    }
+
+    *, *::before, *::after { box-sizing: border-box; }
+
+    html, body {
+      height: 100%;
+      margin: 0;
+      background: var(--white);
+      color: var(--navy);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      text-rendering: optimizeLegibility;
+    }
+
+    body {
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      /* 100dvh avoids the mobile URL-bar jump that makes "centre" drift */
+      min-height: 100vh;
+      min-height: 100dvh;
+    }
+
+    .stage {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ---------- Wordmark ---------- */
+    .logo {
+      margin: 0;
+      font-family: var(--font-display);
+      font-weight: 500;
+      font-size: var(--logo-size);
+      line-height: 1;
+      letter-spacing: var(--logo-track);
+      /* Trailing tracking would push the word left of true centre; cancel it */
+      margin-right: calc(var(--logo-track) * -1);
+      text-transform: uppercase;
+      white-space: nowrap;
+      font-feature-settings: "kern", "liga";
+      font-optical-sizing: none;
+      font-variation-settings: "opsz" 11;   /* sturdier hairlines, like the scaled-up vector wordmark; same widths as the fit */
+      opacity: 0;
+      transform: translateY(0);
+      will-change: transform, opacity;
+    }
+    .logo .gap { display: inline-block; width: var(--logo-gap); }
+    /* ./fonts/RalphLauren.ttf (dafontfree "Ralph Lauren" = Abhaya Libre Medium, SIL OFL).
+       Pixel-fitted to the live header logo: same 264px width / 19px cap height / word gap.
+       Its caps are shorter, so it needs 1.277x the size of the Bodoni fallback. */
+    .has-rl-font .logo {
+      font-size: calc(var(--logo-size) * 1.2767);
+      letter-spacing: 0.1402em;
+      margin-right: -0.1402em;
+      font-variation-settings: normal;
+      font-weight: 400;
+    }
+    .has-rl-font .logo .gap { width: 0.621em; }
+
+    /* Swap in the official SVG if you have brand approval:
+       <img class="logo logo--svg" src="./ralph_lauren_logo_navy.svg" alt="Ralph Lauren"> */
+    .logo--svg { width: clamp(220px, 35vw, 504px); height: auto; margin-right: 0; letter-spacing: 0; }
+
+    /* ---------- Status ---------- */
+    .status {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      transform: translate(-50%, 0);
+      margin-top: calc(var(--lift) * 1.2);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      opacity: 0;
+      transition: opacity .5s var(--ease-out), transform .5s var(--ease-out);
+    }
+
+    .status__label {
+      font-family: var(--font-mono);
+      font-size: 11px;                 /* identical to the site's nav: 11px / 0.9px / uppercase */
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: 0.9px;
+      margin-right: -0.9px;            /* trailing-track correction keeps it optically centred */
+      text-transform: uppercase;
+      white-space: nowrap;
+      color: var(--navy);
+      margin-top: 0;
+      margin-bottom: 0;
+      position: relative;              /* word stays optically centred; dots hang off the right */
+    }
+    .dots { position: absolute; left: 100%; top: 0; letter-spacing: 0.12em; }
+    .dots span { opacity: 0; animation: dot 1.4s infinite; }
+    .dots span:nth-child(2) { animation-delay: .2s; }
+    .dots span:nth-child(3) { animation-delay: .4s; }
+    @keyframes dot { 0%, 20% { opacity: 0; } 40%, 80% { opacity: 1; } 100% { opacity: 0; } }
+
+    /* 1px hairline that draws left-to-right: the same device as the site's CTA underline */
+    .status__rule {
+      width: 120px;
+      height: 1px;
+      background: var(--grey-rule);
+      overflow: hidden;
+    }
+    .status__rule::after {
+      content: "";
+      display: block;
+      height: 100%;
+      background: var(--navy);
+      transform: scaleX(0);
+      transform-origin: left center;
+      transition: transform var(--auth-duration, 2200ms) var(--ease-in-out);
+    }
+
+    /* ---------- Sequence states (driven by JS adding classes to <body>) ---------- */
+    .is-in    .logo   { opacity: 1; transition: opacity 1s var(--ease-out); }
+    .is-lift  .logo   { opacity: 1; transform: translateY(calc(var(--lift) * -1)); transition: transform 1s var(--ease-out), opacity 1s var(--ease-out); }
+    .is-lift  .status { opacity: 1; transform: translate(-50%, calc(var(--lift) * -1 + 0px)); transition-delay: .35s; }
+    .is-auth  .status__rule::after { transform: scaleX(1); }
+    .is-done  .dots { visibility: hidden; }
+    .is-leave .stage { opacity: 0; transform: translateY(-12px); filter: blur(1.5px); }
+    .stage { transition: opacity .8s var(--ease-in-out), transform .8s var(--ease-in-out), filter .8s var(--ease-in-out); }
+
+    /* ---------- Authentication Not Found ---------- */
+    .notice {
+      position: absolute;
+      top: 100%;
+      left: 50%;
+      width: min(560px, calc(100vw - 60px));   /* site mobile side padding = 1.875em = 30px */
+      transform: translate(-50%, 12px);
+      margin-top: calc(var(--lift) * 1.6);
+      text-align: center;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity .7s var(--ease-out), transform .7s var(--ease-out), visibility 0s .7s;
+    }
+    .notice__title {
+      margin: 0 0 16px;
+      font-family: var(--font-serif);
+      font-weight: 400;
+      font-size: 28px;                 /* site's secondary headline: 28px / 40px */
+      line-height: 40px;
+      letter-spacing: normal;
+      color: var(--navy);
+      outline: none;
+      text-wrap: balance;
+    }
+    @media (max-width: 767px) { .notice__title { font-size: 24px; line-height: 32px; } }
+    .notice__body {
+      margin: 0 auto;
+      font-family: var(--font-serif);
+      font-size: 16px;                 /* site's tile description: 16px / 28px / .25px */
+      line-height: 28px;
+      letter-spacing: .25px;
+      color: var(--grey-text);
+      text-wrap: pretty;
+    }
+    .notice__body + .notice__body { margin-top: 14px; }
+    .notice__body a {
+      color: var(--navy);
+      text-decoration: underline;
+      text-decoration-thickness: 1px;
+      text-underline-offset: 3px;
+      transition: opacity .35s ease-in-out;
+    }
+    .notice__body a:hover { opacity: .6; }
+
+    .notice__actions { margin-top: 36px; display: flex; justify-content: center; flex-wrap: wrap; gap: 20px 40px; }
+    /* Site CTA: no box, 14px uppercase / 1px tracking, 1px rule 5px below that draws on hover */
+    .cta {
+      position: relative;
+      display: inline-block;
+      padding-bottom: 6px;
+      font-family: var(--font-text);
+      font-size: 14px;
+      font-weight: 400;
+      letter-spacing: 1px;
+      line-height: 1;
+      text-transform: uppercase;
+      color: var(--navy);
+      text-decoration: none;
+    }
+    .cta::after {
+      content: "";
+      position: absolute;
+      left: 0; right: 1px; bottom: 0;   /* right: 1px trims the trailing letter-space */
+      height: 1px;
+      background: currentColor;
+      transform-origin: right center;
+      transition: transform .35s var(--ease-in-out);
+    }
+    .cta:hover::after { transform: scaleX(0); }
+    .cta:focus-visible { outline: 1px solid var(--navy); outline-offset: 6px; }
+
+    .is-fail .status__rule::after { background: var(--grey-text); }
+    .is-fail .dots { visibility: hidden; }
+    .is-fail .stage { transform: translateY(calc(var(--shift, 0px) * -1)); transition: transform .9s var(--ease-in-out); }
+    .is-fail-msg .status { opacity: 0; transition-delay: 0s; }
+    .is-fail-msg .notice { opacity: 1; visibility: visible; transform: translate(-50%, 0); transition-delay: .25s, .25s, 0s; }
+    .is-fail-msg { overflow: auto; }
+
+    /* Respect reduced-motion: no movement, just a calm cross-fade */
+    @media (prefers-reduced-motion: reduce) {
+      .logo, .status, .status__rule::after { transition-duration: .01ms !important; }
+      .is-leave .stage { transform: none; filter: none; }
+      .notice, .is-fail .stage { transition-duration: .01ms !important; }
+      .is-lift .logo { transform: none; }
+      .is-lift .status { transform: translate(-50%, 0); }
+      .dots span { animation: none; opacity: 1; }
+    }
+
+    .visually-hidden { position: absolute !important; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+    noscript a { font-family: var(--font-mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--navy); }
+  </style>
+</head>
+<body>
+  <main class="stage" aria-busy="true">
+    <h1 class="logo" aria-label="Ralph Lauren">RALPH<span class="gap" aria-hidden="true"></span>LAUREN</h1>
+
+    <div class="status">
+      <p class="status__label" role="status" aria-live="polite">
+        <span class="status__text">Authenticating</span><span class="dots" aria-hidden="true"><span>.</span><span>.</span><span>.</span></span>
+      </p>
+      <div class="status__rule" aria-hidden="true"></div>
+    </div>
+
+    <section class="notice" aria-labelledby="notice-title" hidden>
+      <h2 class="notice__title" id="notice-title" tabindex="-1">Authentication Not Found</h2>
+      <p class="notice__body">Thank you for contacting Ralph Lauren. Unfortunately, we are unable to verify the authenticity of products not purchased directly through our Ralph Lauren websites or an authorized Ralph Lauren retailer.</p>
+      <p class="notice__body">We appreciate your support, and encourage you to shop through our authorized channels in the future for a guaranteed authentic experience. To find your nearest Ralph Lauren store, please visit our <a href="https://www.ralphlauren.global/in/en/stores">store locator</a>.</p>
+      <div class="notice__actions">
+        <a class="cta" href="https://www.ralphlauren.global/in/en/stores">Find a Store</a>
+        <a class="cta" href="https://www.ralphlauren.global/in/en">Shop Ralph Lauren</a>
+      </div>
+    </section>
+
+    <noscript><p><a href="https://www.ralphlauren.global/in/en">Continue to Ralph Lauren</a></p></noscript>
+  </main>
+
+  <script>
+    (() => {
+      // Where to land when authentication succeeds. Point this at your own home page if you have one (e.g. "./home.html").
+      const HOME_URL = "https://www.ralphlauren.global/in/en";
+
+      // ---- QR code lists --------------------------------------------------------
+      // Each QR opens this page as  ...index.html?code=RL-0001
+      // Add / remove codes here, then re-upload the page. Matching ignores case and spaces.
+
+      // ✅ Verified: shows "Authenticated", then redirects to the home page
+      const VERIFIED_CODES = [
+        "RL-0001",
+        "RL-0003",
+        "RL-0005",
+      ];
+
+      // ❌ Unverified: shows "Authentication Not Found"
+      const UNVERIFIED_CODES = [
+        "RL-0002",
+        "RL-0004",
+      ];
+
+      // Codes in neither list, or a scan with no code at all.
+      // false = "Authentication Not Found" (safe default); true = treat as verified.
+      const UNKNOWN_CODE_IS_VERIFIED = false;
+
+      // Optional: instead of the lists above, ask a server. If set, GET `${VERIFY_URL}?code=<code>`
+      // and expect JSON { "authentic": true|false }. Any network/HTTP error counts as NOT found.
+      const VERIFY_URL = "";
+
+      const params = new URLSearchParams(location.search);
+      const normalise = (c) => String(c || "").trim().toUpperCase();
+      const verifiedSet = new Set(VERIFIED_CODES.map(normalise));
+      const unverifiedSet = new Set(UNVERIFIED_CODES.map(normalise));
+
+      async function verifyAuthenticity() {
+        const code = normalise(params.get("code"));
+        if (!VERIFY_URL) {
+          if (unverifiedSet.has(code)) return false;   // checked first: a code in both lists fails
+          if (verifiedSet.has(code)) return true;
+          return UNKNOWN_CODE_IS_VERIFIED;
+        }
+        try {
+          const url = new URL(VERIFY_URL, location.href);
+          url.searchParams.set("code", params.get("code") || "");
+          const res = await fetch(url, { headers: { Accept: "application/json" }, credentials: "same-origin" });
+          if (!res.ok) return false;
+          const data = await res.json();
+          return data && data.authentic === true;
+        } catch {
+          return false;
+        }
+      }
+      // Kick the check off immediately so it runs while the animation plays.
+      const verification = verifyAuthenticity();
+
+      const T = {
+        fadeIn:   100,   // logo starts fading in
+        lift:     1200,  // logo rises, status appears
+        auth:     1700,  // hairline starts drawing
+        authMs:   2200,  // how long the hairline takes
+        settle:   500,   // pause on "Authenticated" before leaving
+        leave:    800    // matches .stage transition: lift + fade + soft blur out to white
+      };
+
+      const body = document.body;
+      const label = document.querySelector(".status__text");
+      const stage = document.querySelector(".stage");
+      body.style.setProperty("--auth-duration", T.authMs + "ms");
+
+      const wait = (ms) => new Promise((r) => setTimeout(r, ms));
+
+      // Use the dafontfree "Ralph Lauren" TTF if it's in ./fonts, else the fitted Bodoni Moda.
+      const rlFont = document.fonts
+        ? document.fonts.load('400 40px "Ralph Lauren"', "RALPH LAUREN").then((f) => {
+            if (f.length) body.classList.add("has-rl-font");
+          }).catch(() => {})
+        : Promise.resolve();
+      // Wait for fonts (max 1.2s) so the wordmark never swaps face mid-animation.
+      const fontsReady = Promise.race([Promise.all([rlFont, document.fonts ? document.fonts.ready : null]), wait(1200)]);
+
+      // Fallback warm-up for browsers without Speculation Rules (Safari/Firefox).
+      if (!(HTMLScriptElement.supports && HTMLScriptElement.supports("speculationrules"))) {
+        const l = document.createElement("link"); l.rel = "prefetch"; l.href = HOME_URL; document.head.appendChild(l);
+      }
+
+      fontsReady.then(async () => {
+        await wait(T.fadeIn);                 body.classList.add("is-in");
+        await wait(T.lift - T.fadeIn);        body.classList.add("is-lift");
+        await wait(T.auth - T.lift);          body.classList.add("is-auth");
+        await wait(T.authMs);
+        // If the check is still running, the hairline is full and the dots keep pulsing until it answers.
+        const authentic = await verification;
+
+        if (!authentic) return showNotFound();
+
+        label.textContent = "Authenticated"; body.classList.add("is-done");
+        await wait(T.settle);                 body.classList.add("is-leave");
+        stage.setAttribute("aria-busy", "false");
+        // Navigate only once the screen is fully white, so the hand-off to the
+        // (prerendered) home page is a clean white-to-page reveal, never a flash.
+        await wait(T.leave);
+        requestAnimationFrame(() => window.location.replace(HOME_URL)); // replace(): Back won't return to the loader
+      });
+
+      async function showNotFound() {
+        label.textContent = "Not Found";
+        body.classList.add("is-fail");
+        stage.setAttribute("aria-busy", "false");
+
+        const notice = document.querySelector(".notice");
+        notice.hidden = false;
+        // Re-centre logo + message as one block; never push the logo above a 40px top margin.
+        const logo = document.querySelector(".logo");
+        const lift = parseFloat(getComputedStyle(logo).transform.split(",")[5]) || 0; // current (negative) lift
+        const noticeTop = parseFloat(getComputedStyle(notice).marginTop);
+        const ideal = (noticeTop + notice.offsetHeight) / 2 + lift;
+        const logoTop = logo.getBoundingClientRect().top;
+        const shift = Math.max(0, Math.min(ideal, logoTop - 40));
+        body.style.setProperty("--shift", shift + "px");
+
+        await wait(T.settle + 300);           // let "NOT FOUND" register before the message replaces it
+        body.classList.add("is-fail-msg");
+        await wait(400);
+        document.getElementById("notice-title").focus({ preventScroll: true }); // screen readers land on the message
+      }
+    })();
+  </script>
+</body>
+</html>
